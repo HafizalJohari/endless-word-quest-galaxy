@@ -66,7 +66,28 @@ export const WordSearchGrid: React.FC<WordSearchGridProps> = ({
     return path;
   };
 
-  const handleMouseDown = (row: number, col: number) => {
+  const getCellFromCoordinates = (x: number, y: number): CellPosition | null => {
+    if (!gridRef.current) return null;
+    
+    const rect = gridRef.current.getBoundingClientRect();
+    const cellElements = gridRef.current.querySelectorAll('[data-cell]');
+    
+    for (const element of cellElements) {
+      const cellRect = element.getBoundingClientRect();
+      if (
+        x >= cellRect.left &&
+        x <= cellRect.right &&
+        y >= cellRect.top &&
+        y <= cellRect.bottom
+      ) {
+        const [row, col] = (element as HTMLElement).dataset.cell!.split('-').map(Number);
+        return { row, col };
+      }
+    }
+    return null;
+  };
+
+  const handleStart = (row: number, col: number) => {
     const start = { row, col };
     setSelectedPath({
       start,
@@ -76,7 +97,7 @@ export const WordSearchGrid: React.FC<WordSearchGridProps> = ({
     setIsSelecting(true);
   };
 
-  const handleMouseEnter = (row: number, col: number) => {
+  const handleMove = (row: number, col: number) => {
     if (isSelecting && selectedPath) {
       const end = { row, col };
       if (isValidDirection(selectedPath.start, end)) {
@@ -90,7 +111,7 @@ export const WordSearchGrid: React.FC<WordSearchGridProps> = ({
     }
   };
 
-  const handleMouseUp = () => {
+  const handleEnd = () => {
     if (selectedPath && isSelecting) {
       const word = getSelectedWord(selectedPath.cells);
       const reversedWord = word.split('').reverse().join('');
@@ -111,6 +132,41 @@ export const WordSearchGrid: React.FC<WordSearchGridProps> = ({
     setIsSelecting(false);
   };
 
+  // Mouse event handlers
+  const handleMouseDown = (row: number, col: number) => {
+    handleStart(row, col);
+  };
+
+  const handleMouseEnter = (row: number, col: number) => {
+    handleMove(row, col);
+  };
+
+  const handleMouseUp = () => {
+    handleEnd();
+  };
+
+  // Touch event handlers
+  const handleTouchStart = (e: React.TouchEvent, row: number, col: number) => {
+    e.preventDefault(); // Prevent scrolling
+    handleStart(row, col);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault(); // Prevent scrolling
+    if (!isSelecting) return;
+    
+    const touch = e.touches[0];
+    const cell = getCellFromCoordinates(touch.clientX, touch.clientY);
+    if (cell) {
+      handleMove(cell.row, cell.col);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
+    handleEnd();
+  };
+
   const isCellSelected = (row: number, col: number): boolean => {
     return selectedPath?.cells.some(cell => cell.row === row && cell.col === col) || false;
   };
@@ -125,18 +181,21 @@ export const WordSearchGrid: React.FC<WordSearchGridProps> = ({
     <div className="flex flex-col items-center">
       <div
         ref={gridRef}
-        className="grid grid-cols-12 gap-1 p-4 bg-game-grid rounded-lg shadow-inner select-none"
+        className="grid grid-cols-12 gap-1 p-4 bg-game-grid rounded-lg shadow-inner select-none touch-none"
         onMouseLeave={() => {
           if (isSelecting) {
             setSelectedPath(null);
             setIsSelecting(false);
           }
         }}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {grid.map((row, rowIndex) =>
           row.map((letter, colIndex) => (
             <div
               key={getCellKey(rowIndex, colIndex)}
+              data-cell={`${rowIndex}-${colIndex}`}
               className={`
                 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 
                 flex items-center justify-center 
@@ -153,6 +212,7 @@ export const WordSearchGrid: React.FC<WordSearchGridProps> = ({
               onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
               onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
               onMouseUp={handleMouseUp}
+              onTouchStart={(e) => handleTouchStart(e, rowIndex, colIndex)}
             >
               {letter.toUpperCase()}
             </div>
