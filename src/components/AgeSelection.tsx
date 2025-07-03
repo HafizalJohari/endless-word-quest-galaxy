@@ -8,10 +8,11 @@ import { Target, Users, Baby, GraduationCap } from 'lucide-react';
 import { type Difficulty } from '../lib/gameGenerator';
 
 interface AgeSelectionProps {
-  onAgeSelected: (difficulty: Difficulty) => void;
+  onPlayerReady: (player: { name: string; age: number; difficulty: Difficulty }) => void;
 }
 
-export const AgeSelection: React.FC<AgeSelectionProps> = ({ onAgeSelected }) => {
+export const AgeSelection: React.FC<AgeSelectionProps> = ({ onPlayerReady }) => {
+  const [playerName, setPlayerName] = useState<string>('');
   const [selectedAge, setSelectedAge] = useState<string>('');
   const [selectedRange, setSelectedRange] = useState<string>('');
 
@@ -22,7 +23,7 @@ export const AgeSelection: React.FC<AgeSelectionProps> = ({ onAgeSelected }) => 
   ];
 
   const handleAgeSubmit = () => {
-    if (selectedAge) {
+    if (selectedAge && playerName.trim()) {
       const age = parseInt(selectedAge);
       let difficulty: Difficulty = 'easy';
       
@@ -30,13 +31,18 @@ export const AgeSelection: React.FC<AgeSelectionProps> = ({ onAgeSelected }) => 
       else if (age >= 9 && age <= 12) difficulty = 'medium';
       else if (age >= 13) difficulty = 'hard';
       
-      onAgeSelected(difficulty);
+      onPlayerReady({ name: playerName.trim(), age, difficulty });
     }
   };
 
   const handleRangeSubmit = () => {
-    if (selectedRange) {
-      onAgeSelected(selectedRange as Difficulty);
+    if (selectedRange && playerName.trim()) {
+      const ageMapping = { easy: 7, medium: 10, hard: 16 };
+      onPlayerReady({ 
+        name: playerName.trim(), 
+        age: ageMapping[selectedRange as keyof typeof ageMapping], 
+        difficulty: selectedRange as Difficulty 
+      });
     }
   };
 
@@ -52,6 +58,19 @@ export const AgeSelection: React.FC<AgeSelectionProps> = ({ onAgeSelected }) => 
         </div>
 
         <div className="space-y-6">
+          {/* Name Input */}
+          <div className="space-y-3">
+            <Label htmlFor="name" className="text-base font-semibold">Enter your name:</Label>
+            <Input
+              id="name"
+              type="text"
+              placeholder="Your name"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              className="w-full"
+            />
+          </div>
+
           {/* Age Input Option */}
           <div className="space-y-3">
             <Label htmlFor="age" className="text-base font-semibold">Enter your age:</Label>
@@ -71,7 +90,7 @@ export const AgeSelection: React.FC<AgeSelectionProps> = ({ onAgeSelected }) => 
               />
               <Button 
                 onClick={handleAgeSubmit}
-                disabled={!selectedAge || parseInt(selectedAge) < 6}
+                disabled={!selectedAge || parseInt(selectedAge) < 6 || !playerName.trim()}
                 className="bg-gradient-primary"
               >
                 Start Game
@@ -109,6 +128,7 @@ export const AgeSelection: React.FC<AgeSelectionProps> = ({ onAgeSelected }) => 
             {selectedRange && (
               <Button 
                 onClick={handleRangeSubmit}
+                disabled={!playerName.trim()}
                 className="w-full bg-gradient-primary mt-4"
                 size="lg"
               >

@@ -2,13 +2,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Trophy, Target, Zap } from 'lucide-react';
+import { RefreshCw, Trophy, Target, Zap, Award } from 'lucide-react';
 import { WordSearchGrid } from './WordSearchGrid';
 import { AgeSelection } from './AgeSelection';
+import { Leaderboard } from './Leaderboard';
+import { SuccessEffects } from './SuccessEffects';
 import { generateGameData, type GameData, type Difficulty } from '../lib/gameGenerator';
 
 interface WordSearchGameProps {
   className?: string;
+}
+
+interface Player {
+  name: string;
+  age: number;
+  difficulty: Difficulty;
 }
 
 export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => {
@@ -16,14 +24,16 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
   const [foundWords, setFoundWords] = useState<Set<string>>(new Set());
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState(1);
-  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
+  const [player, setPlayer] = useState<Player | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [successEffect, setSuccessEffect] = useState<'word' | 'level' | null>(null);
 
   const generateNewGame = useCallback(async () => {
-    if (!difficulty) return;
+    if (!player) return;
     setIsLoading(true);
     try {
-      const newGameData = await generateGameData(difficulty);
+      const newGameData = await generateGameData(player.difficulty);
       setGameData(newGameData);
       setFoundWords(new Set());
     } catch (error) {
@@ -31,43 +41,73 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
     } finally {
       setIsLoading(false);
     }
-  }, [difficulty]);
+  }, [player]);
 
   useEffect(() => {
-    if (difficulty) {
+    if (player) {
       generateNewGame();
     }
   }, [generateNewGame]);
 
-  const handleAgeSelected = useCallback((selectedDifficulty: Difficulty) => {
-    setDifficulty(selectedDifficulty);
+  const handlePlayerReady = useCallback((playerData: Player) => {
+    setPlayer(playerData);
   }, []);
 
+  const saveScore = useCallback(() => {
+    if (!player) return;
+    
+    const scoreData = {
+      name: player.name,
+      age: player.age,
+      difficulty: player.difficulty,
+      score,
+      level,
+      date: new Date().toISOString()
+    };
+    
+    const existingScores = JSON.parse(localStorage.getItem('wordSearchScores') || '[]');
+    existingScores.push(scoreData);
+    existingScores.sort((a: any, b: any) => b.score - a.score);
+    localStorage.setItem('wordSearchScores', JSON.stringify(existingScores.slice(0, 10))); // Keep top 10
+  }, [player, score, level]);
+
   const handleWordFound = useCallback((word: string) => {
-    if (!foundWords.has(word)) {
+    if (!foundWords.has(word) && player) {
       const newFoundWords = new Set(foundWords);
       newFoundWords.add(word);
       setFoundWords(newFoundWords);
       
       // Calculate score based on word length and difficulty
       const basePoints = word.length * 10;
-      const difficultyMultiplier = difficulty === 'easy' ? 1 : difficulty === 'medium' ? 1.5 : 2;
+      const difficultyMultiplier = player.difficulty === 'easy' ? 1 : player.difficulty === 'medium' ? 1.5 : 2;
       const points = Math.round(basePoints * difficultyMultiplier);
       setScore(prev => prev + points);
+      
+      // Trigger word found effect
+      setSuccessEffect('word');
     }
-  }, [foundWords, difficulty]);
+  }, [foundWords, player]);
 
   const handleLevelComplete = useCallback(() => {
     setLevel(prev => prev + 1);
+    saveScore();
+    
+    // Trigger level complete effect
+    setSuccessEffect('level');
     
     // Increase difficulty every 3 levels
-    if (level % 3 === 0) {
-      if (difficulty === 'easy') setDifficulty('medium');
-      else if (difficulty === 'medium') setDifficulty('hard');
+    if (level % 3 === 0 && player) {
+      const newPlayer = { ...player };
+      if (player.difficulty === 'easy') newPlayer.difficulty = 'medium';
+      else if (player.difficulty === 'medium') newPlayer.difficulty = 'hard';
+      setPlayer(newPlayer);
     }
     
-    generateNewGame();
-  }, [level, difficulty, generateNewGame]);
+    // Delay new game generation to show effects
+    setTimeout(() => {
+      generateNewGame();
+    }, 2000);
+  }, [level, player, generateNewGame, saveScore]);
 
   useEffect(() => {
     if (gameData && foundWords.size === gameData.wordsToFind.length) {
@@ -91,9 +131,9 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
     }
   };
 
-  // Show age selection if no difficulty is set
-  if (!difficulty) {
-    return <AgeSelection onAgeSelected={handleAgeSelected} />;
+  // Show age selection if no player is set
+  if (!player) {
+    return <AgeSelection onPlayerReady={handlePlayerReady} />;
   }
 
   // Show loading while generating game
@@ -123,13 +163,13 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-foreground">Word Search Infinity</h1>
-                  <p className="text-muted-foreground">Theme: {gameData.theme}</p>
+                  <p className="text-muted-foreground">Theme: {gameData.theme} | Player: {player.name}</p>
                 </div>
               </div>
               
               <div className="flex items-center gap-3">
-                <Badge variant="outline" className={getDifficultyColor(difficulty)}>
-                  {getDifficultyLabel(difficulty)}
+                <Badge variant="outline" className={getDifficultyColor(player.difficulty)}>
+                  {getDifficultyLabel(player.difficulty)}
                 </Badge>
                 <div className="flex items-center gap-2 bg-game-grid px-3 py-2 rounded-lg">
                   <Trophy className="w-4 h-4 text-accent" />
@@ -212,6 +252,17 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
               </div>
             </Card>
 
+            {/* Leaderboard Button */}
+            <Button
+              onClick={() => setShowLeaderboard(true)}
+              variant="outline"
+              className="w-full"
+              size="lg"
+            >
+              <Award className="w-4 h-4 mr-2" />
+              Leaderboard
+            </Button>
+
             {/* New Game Button */}
             <Button
               onClick={generateNewGame}
@@ -231,6 +282,18 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
           </div>
         </div>
       </div>
+
+      {/* Success Effects */}
+      <SuccessEffects
+        trigger={successEffect}
+        onComplete={() => setSuccessEffect(null)}
+      />
+
+      {/* Leaderboard Modal */}
+      <Leaderboard
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+      />
     </div>
   );
 };
