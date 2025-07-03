@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { RefreshCw, Trophy, Target, Zap } from 'lucide-react';
 import { WordSearchGrid } from './WordSearchGrid';
+import { AgeSelection } from './AgeSelection';
 import { generateGameData, type GameData, type Difficulty } from '../lib/gameGenerator';
 
 interface WordSearchGameProps {
@@ -15,10 +16,11 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
   const [foundWords, setFoundWords] = useState<Set<string>>(new Set());
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState(1);
-  const [difficulty, setDifficulty] = useState<Difficulty>('easy');
+  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const generateNewGame = useCallback(async () => {
+    if (!difficulty) return;
     setIsLoading(true);
     try {
       const newGameData = await generateGameData(difficulty);
@@ -32,8 +34,14 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
   }, [difficulty]);
 
   useEffect(() => {
-    generateNewGame();
+    if (difficulty) {
+      generateNewGame();
+    }
   }, [generateNewGame]);
+
+  const handleAgeSelected = useCallback((selectedDifficulty: Difficulty) => {
+    setDifficulty(selectedDifficulty);
+  }, []);
 
   const handleWordFound = useCallback((word: string) => {
     if (!foundWords.has(word)) {
@@ -83,6 +91,12 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
     }
   };
 
+  // Show age selection if no difficulty is set
+  if (!difficulty) {
+    return <AgeSelection onAgeSelected={handleAgeSelected} />;
+  }
+
+  // Show loading while generating game
   if (!gameData) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-game">
