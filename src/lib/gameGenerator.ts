@@ -17,44 +17,44 @@ interface ThemeWordList {
 
 const THEMES: ThemeWordList = {
   animals: {
-    easy: ['cat', 'dog', 'cow', 'pig', 'bee', 'ant', 'fox', 'owl'],
-    medium: ['tiger', 'elephant', 'giraffe', 'penguin', 'dolphin', 'monkey', 'rabbit'],
-    hard: ['rhinoceros', 'hippopotamus', 'chimpanzee', 'crocodile', 'kangaroo', 'chameleon']
+    easy: ['cat', 'dog', 'cow', 'pig', 'bee', 'ant', 'fox', 'owl', 'bat', 'rat', 'bug', 'fish'],
+    medium: ['tiger', 'elephant', 'giraffe', 'penguin', 'dolphin', 'monkey', 'rabbit', 'turtle', 'lizard', 'eagle', 'shark', 'whale'],
+    hard: ['rhinoceros', 'hippopotamus', 'chimpanzee', 'crocodile', 'kangaroo', 'chameleon', 'butterfly', 'octopus', 'flamingo', 'platypus', 'armadillo', 'mongoose']
   },
   food: {
-    easy: ['pie', 'egg', 'ham', 'jam', 'tea', 'ice', 'nut', 'gum'],
-    medium: ['pizza', 'burger', 'chicken', 'cheese', 'banana', 'orange', 'potato'],
-    hard: ['spaghetti', 'broccoli', 'strawberry', 'chocolate', 'sandwich', 'avocado']
+    easy: ['pie', 'egg', 'ham', 'jam', 'tea', 'ice', 'nut', 'gum', 'cake', 'milk', 'soup', 'rice'],
+    medium: ['pizza', 'burger', 'chicken', 'cheese', 'banana', 'orange', 'potato', 'tomato', 'carrot', 'lettuce', 'butter', 'yogurt'],
+    hard: ['spaghetti', 'broccoli', 'strawberry', 'chocolate', 'sandwich', 'avocado', 'cucumber', 'zucchini', 'asparagus', 'artichoke', 'cauliflower', 'blueberry']
   },
   sports: {
-    easy: ['run', 'jump', 'swim', 'ski', 'bike', 'ball', 'game', 'win'],
-    medium: ['soccer', 'tennis', 'hockey', 'boxing', 'racing', 'skiing', 'diving'],
-    hard: ['basketball', 'volleyball', 'badminton', 'wrestling', 'gymnastics', 'marathon']
+    easy: ['run', 'jump', 'swim', 'ski', 'bike', 'ball', 'game', 'win', 'race', 'kick', 'throw', 'catch'],
+    medium: ['soccer', 'tennis', 'hockey', 'boxing', 'racing', 'skiing', 'diving', 'rowing', 'cycling', 'golfing', 'surfing', 'skating'],
+    hard: ['basketball', 'volleyball', 'badminton', 'wrestling', 'gymnastics', 'marathon', 'swimming', 'football', 'baseball', 'cheerleading', 'weightlifting', 'skateboarding']
   },
   nature: {
-    easy: ['sun', 'moon', 'star', 'tree', 'leaf', 'wind', 'rain', 'snow'],
-    medium: ['forest', 'mountain', 'rainbow', 'thunder', 'lightning', 'sunset', 'flower'],
-    hard: ['waterfall', 'wilderness', 'hurricane', 'earthquake', 'avalanche', 'tornado']
+    easy: ['sun', 'moon', 'star', 'tree', 'leaf', 'wind', 'rain', 'snow', 'rock', 'sand', 'hill', 'lake'],
+    medium: ['forest', 'mountain', 'rainbow', 'thunder', 'lightning', 'sunset', 'flower', 'volcano', 'desert', 'island', 'valley', 'canyon'],
+    hard: ['waterfall', 'wilderness', 'hurricane', 'earthquake', 'avalanche', 'tornado', 'glacier', 'meadow', 'prairie', 'plateau', 'peninsula', 'archipelago']
   },
   colors: {
-    easy: ['red', 'blue', 'pink', 'gold', 'gray', 'tan', 'navy', 'lime'],
-    medium: ['green', 'yellow', 'orange', 'purple', 'silver', 'bronze', 'maroon'],
-    hard: ['turquoise', 'magenta', 'crimson', 'lavender', 'emerald', 'burgundy']
+    easy: ['red', 'blue', 'pink', 'gold', 'gray', 'tan', 'navy', 'lime', 'black', 'white', 'brown', 'cyan'],
+    medium: ['green', 'yellow', 'orange', 'purple', 'silver', 'bronze', 'maroon', 'violet', 'indigo', 'salmon', 'coral', 'amber'],
+    hard: ['turquoise', 'magenta', 'crimson', 'lavender', 'emerald', 'burgundy', 'chartreuse', 'vermillion', 'aquamarine', 'fuchsia', 'periwinkle', 'mahogany']
   },
   school: {
-    easy: ['pen', 'book', 'desk', 'art', 'math', 'read', 'draw', 'test'],
-    medium: ['pencil', 'teacher', 'student', 'homework', 'science', 'history', 'library'],
-    hard: ['calculator', 'geography', 'literature', 'education', 'assignment', 'knowledge']
+    easy: ['pen', 'book', 'desk', 'art', 'math', 'read', 'draw', 'test', 'quiz', 'page', 'word', 'line'],
+    medium: ['pencil', 'teacher', 'student', 'homework', 'science', 'history', 'library', 'computer', 'notebook', 'backpack', 'classroom', 'assignment'],
+    hard: ['calculator', 'geography', 'literature', 'education', 'assignment', 'knowledge', 'microscope', 'experiment', 'biography', 'encyclopedia', 'dictionary', 'multiplication']
   },
   space: {
-    easy: ['sun', 'moon', 'star', 'mars', 'sky', 'ufo', 'orbit', 'comet'],
-    medium: ['planet', 'rocket', 'saturn', 'galaxy', 'meteor', 'jupiter', 'neptune'],
-    hard: ['astronaut', 'telescope', 'constellation', 'spacecraft', 'universe', 'satellite']
+    easy: ['sun', 'moon', 'star', 'mars', 'sky', 'ufo', 'orbit', 'comet', 'earth', 'space', 'alien', 'rocket'],
+    medium: ['planet', 'rocket', 'saturn', 'galaxy', 'meteor', 'jupiter', 'neptune', 'mercury', 'venus', 'uranus', 'pluto', 'asteroid'],
+    hard: ['astronaut', 'telescope', 'constellation', 'spacecraft', 'universe', 'satellite', 'nebula', 'supernova', 'blackhole', 'meteorite', 'observatory', 'cosmology']
   },
   transportation: {
-    easy: ['car', 'bus', 'van', 'jet', 'boat', 'bike', 'taxi', 'train'],
-    medium: ['truck', 'plane', 'ferry', 'subway', 'scooter', 'helicopter', 'motorcycle'],
-    hard: ['automobile', 'helicopter', 'submarine', 'spacecraft', 'ambulance', 'limousine']
+    easy: ['car', 'bus', 'van', 'jet', 'boat', 'bike', 'taxi', 'train', 'truck', 'ship', 'plane', 'walk'],
+    medium: ['truck', 'plane', 'ferry', 'subway', 'scooter', 'helicopter', 'motorcycle', 'bicycle', 'trolley', 'wagon', 'sled', 'canoe'],
+    hard: ['automobile', 'helicopter', 'submarine', 'spacecraft', 'ambulance', 'limousine', 'bulldozer', 'excavator', 'steamboat', 'hovercraft', 'monorail', 'stagecoach']
   }
 };
 
@@ -66,9 +66,45 @@ const getRandomTheme = (): string => {
 };
 
 const getWordsForDifficulty = (theme: string, difficulty: Difficulty, count: number): string[] => {
-  const words = THEMES[theme][difficulty];
-  const shuffled = [...words].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, Math.min(count, words.length));
+  const themeWords = THEMES[theme];
+  let selectedWords: string[] = [];
+  
+  // Mix words from different difficulty levels based on the current difficulty
+  switch (difficulty) {
+    case 'easy':
+      // For easy: 8 easy words, 3 medium words, 1 hard word
+      selectedWords = [
+        ...getRandomWords(themeWords.easy, 8),
+        ...getRandomWords(themeWords.medium, 3),
+        ...getRandomWords(themeWords.hard, 1)
+      ];
+      break;
+    case 'medium':
+      // For medium: 4 easy words, 6 medium words, 2 hard words
+      selectedWords = [
+        ...getRandomWords(themeWords.easy, 4),
+        ...getRandomWords(themeWords.medium, 6),
+        ...getRandomWords(themeWords.hard, 2)
+      ];
+      break;
+    case 'hard':
+      // For hard: 2 easy words, 4 medium words, 6 hard words
+      selectedWords = [
+        ...getRandomWords(themeWords.easy, 2),
+        ...getRandomWords(themeWords.medium, 4),
+        ...getRandomWords(themeWords.hard, 6)
+      ];
+      break;
+  }
+  
+  // Shuffle the final list and ensure we have exactly the requested count
+  const shuffled = selectedWords.sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+};
+
+const getRandomWords = (wordList: string[], count: number): string[] => {
+  const shuffled = [...wordList].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, Math.min(count, wordList.length));
 };
 
 const createEmptyGrid = (): string[][] => {
@@ -176,14 +212,9 @@ export const generateGameData = async (difficulty: Difficulty): Promise<GameData
   
   const theme = getRandomTheme();
   
-  // Determine number of words based on difficulty
-  const wordCounts = {
-    easy: 6,
-    medium: 8,
-    hard: 10
-  };
+  // Always find 12 words for consistent challenge
+  const wordCount = 12;
   
-  const wordCount = wordCounts[difficulty];
   const words = getWordsForDifficulty(theme, difficulty, wordCount);
   const grid = placeWordsInGrid(words);
   
