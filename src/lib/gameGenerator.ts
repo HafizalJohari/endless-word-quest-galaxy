@@ -206,11 +206,42 @@ const placeWordsInGrid = (words: string[]): string[][] => {
   return grid;
 };
 
-export const generateGameData = async (difficulty: Difficulty): Promise<GameData> => {
+const getPreferredTheme = (preferences: string[]): string => {
+  // Map preferences to actual theme names
+  const preferenceThemeMap: { [key: string]: string[] } = {
+    'animals': ['animals'],
+    'vacation': ['transportation', 'nature'],
+    'location': ['nature'],
+    'sports': ['sports'],
+    'hobby': ['sports', 'colors'],
+    'school': ['school'],
+    'colors': ['colors'],
+    'space': ['space']
+  };
+  
+  // Collect all possible themes based on preferences
+  const possibleThemes: string[] = [];
+  preferences.forEach(pref => {
+    const themes = preferenceThemeMap[pref];
+    if (themes) {
+      possibleThemes.push(...themes);
+    }
+  });
+  
+  // If no preferences or no matching themes, use all themes
+  if (possibleThemes.length === 0) {
+    return getRandomTheme();
+  }
+  
+  // Return a random theme from the preferred ones
+  return possibleThemes[Math.floor(Math.random() * possibleThemes.length)];
+};
+
+export const generateGameData = async (difficulty: Difficulty, preferences: string[] = []): Promise<GameData> => {
   // Simulate async operation for more realistic loading
   await new Promise(resolve => setTimeout(resolve, 500));
   
-  const theme = getRandomTheme();
+  const theme = getPreferredTheme(preferences);
   
   // Always find 12 words for consistent challenge
   const wordCount = 12;

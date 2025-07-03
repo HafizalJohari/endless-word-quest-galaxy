@@ -17,6 +17,7 @@ interface Player {
   name: string;
   age: number;
   difficulty: Difficulty;
+  preferences: string[];
 }
 
 export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => {
@@ -33,7 +34,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
     if (!player) return;
     setIsLoading(true);
     try {
-      const newGameData = await generateGameData(player.difficulty);
+      const newGameData = await generateGameData(player.difficulty, player.preferences);
       setGameData(newGameData);
       setFoundWords(new Set());
     } catch (error) {
