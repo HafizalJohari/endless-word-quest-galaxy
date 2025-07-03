@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 
 interface WordSearchGridProps {
   grid: string[][];
@@ -28,6 +28,11 @@ export const WordSearchGrid: React.FC<WordSearchGridProps> = ({
   const [isSelecting, setIsSelecting] = useState(false);
   const [foundPaths, setFoundPaths] = useState<Map<string, CellPosition[]>>(new Map());
   const gridRef = useRef<HTMLDivElement>(null);
+
+  // Reset found paths when grid changes (new puzzle)
+  useEffect(() => {
+    setFoundPaths(new Map());
+  }, [grid]);
 
   const getCellKey = (row: number, col: number) => `${row}-${col}`;
 
