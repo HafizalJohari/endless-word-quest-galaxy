@@ -2,39 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Word Search Game Design System - Modern, Educational, Engaging */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 240 10% 97%;
+    --foreground: 240 10% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 10% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 240 10% 8%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 197 71% 52%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 197 71% 70%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 142 76% 36%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
+    --muted: 220 13% 91%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 197 71% 52%;
+
+    /* Game-specific colors */
+    --game-grid: 0 0% 98%;
+    --game-cell: 0 0% 100%;
+    --game-cell-hover: 197 71% 95%;
+    --game-found: 142 76% 88%;
+    --game-highlight: 25 95% 88%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(197 71% 52%), hsl(197 71% 70%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 50%));
+    --gradient-game: linear-gradient(180deg, hsl(240 10% 97%), hsl(240 5% 94%));
+    
+    /* Shadows */
+    --shadow-game: 0 4px 20px -2px hsl(197 71% 52% / 0.15);
+    --shadow-card: 0 2px 10px -2px hsl(240 10% 8% / 0.1);
+    --shadow-cell: 0 1px 3px hsl(240 10% 8% / 0.1);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
