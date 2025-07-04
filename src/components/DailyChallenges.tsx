@@ -144,7 +144,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
   const totalRewards = challenges.reduce((sum, c) => sum + (c.completed ? c.reward : 0), 0);
 
   return (
-    <Card className="challenge-card p-4">
+    <Card className="p-4 shadow-card">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-accent" />
@@ -156,7 +156,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
         </div>
       </div>
 
-      <div className="mb-4 p-3 bg-muted/30 rounded-lg border border-border">
+      <div className="mb-4 p-3 bg-game-grid rounded-lg">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium">Progress Today</span>
           <span className="text-sm text-accent">{completedCount}/{challenges.length}</span>
@@ -176,10 +176,10 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
             key={challenge.id}
             className={`p-3 rounded-lg border transition-all duration-300 ${
               challenge.completed
-                ? 'bg-secondary/10 border-secondary/20 shadow-sm'
+                ? 'bg-game-found border-secondary/20'
                 : activeChallenges.has(challenge.id)
-                ? 'bg-accent/10 border-accent/20 shadow-sm'
-                : 'bg-muted/30 border-border'
+                ? 'bg-game-highlight border-accent/20'
+                : 'bg-game-grid border-border'
             }`}
           >
             <div className="flex items-start gap-3">
