@@ -223,7 +223,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
                           : 'bg-game-grid text-foreground hover:bg-game-cell-hover'
                       }`}
                     >
-                      <span className={`font-medium ${isFound ? 'line-through animate-pulse' : ''}`}>
+                      <span className={`font-medium ${isFound ? 'line-through' : ''}`}>
                         {word.toUpperCase()}
                       </span>
                     </div>
