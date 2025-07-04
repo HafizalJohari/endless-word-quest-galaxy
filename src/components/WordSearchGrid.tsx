@@ -3,8 +3,9 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 interface WordSearchGridProps {
   grid: string[][];
   wordsToFind: string[];
-  onWordFound: (word: string) => void;
+  onWordFound: (selectedCells: CellPosition[]) => void;
   foundWords: Set<string>;
+  foundPaths: Map<string, CellPosition[]>;
 }
 
 interface CellPosition {
@@ -22,17 +23,12 @@ export const WordSearchGrid: React.FC<WordSearchGridProps> = ({
   grid,
   wordsToFind,
   onWordFound,
-  foundWords
+  foundWords,
+  foundPaths
 }) => {
   const [selectedPath, setSelectedPath] = useState<SelectedPath | null>(null);
   const [isSelecting, setIsSelecting] = useState(false);
-  const [foundPaths, setFoundPaths] = useState<Map<string, CellPosition[]>>(new Map());
   const gridRef = useRef<HTMLDivElement>(null);
-
-  // Reset found paths when grid changes (new puzzle)
-  useEffect(() => {
-    setFoundPaths(new Map());
-  }, [grid]);
 
   const getCellKey = (row: number, col: number) => `${row}-${col}`;
 
@@ -118,19 +114,8 @@ export const WordSearchGrid: React.FC<WordSearchGridProps> = ({
 
   const handleEnd = () => {
     if (selectedPath && isSelecting) {
-      const word = getSelectedWord(selectedPath.cells);
-      const reversedWord = word.split('').reverse().join('');
-      
-      // Check if the word or its reverse is in the words to find
-      const foundWord = wordsToFind.find(w => 
-        w.toUpperCase() === word.toUpperCase() || 
-        w.toUpperCase() === reversedWord.toUpperCase()
-      );
-      
-      if (foundWord && !foundWords.has(foundWord)) {
-        onWordFound(foundWord);
-        setFoundPaths(prev => new Map(prev).set(foundWord, selectedPath.cells));
-      }
+      // Pass selected cells to parent for optimized validation
+      onWordFound(selectedPath.cells);
     }
     
     setSelectedPath(null);

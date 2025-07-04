@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,174 +13,90 @@ import { RewardPopup } from './RewardPopup';
 import { ProgressionSystem } from './ProgressionSystem';
 import { DailyChallenges } from './DailyChallenges';
 import { useAudio } from '../hooks/useAudio';
-import { generateGameData, type GameData, type Difficulty } from '../lib/gameGenerator';
+import { gameController, type GameControllerCallbacks } from '../controllers/GameController';
+import { type Player, type CellPosition } from '../models/GameModel';
+import { type Difficulty } from '../lib/gameGenerator';
 
 interface WordSearchGameProps {
   className?: string;
 }
 
-interface Player {
-  name: string;
-  age: number;
-  difficulty: Difficulty;
-  preferences: string[];
-}
-
 export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => {
-  const [gameData, setGameData] = useState<GameData | null>(null);
-  const [foundWords, setFoundWords] = useState<Set<string>>(new Set());
-  const [score, setScore] = useState(0);
-  const [level, setLevel] = useState(1);
-  const [player, setPlayer] = useState<Player | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [successEffect, setSuccessEffect] = useState<'word' | 'level' | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [combo, setCombo] = useState(0);
-  const [lastWordTime, setLastWordTime] = useState(0);
   const [rewardPopup, setRewardPopup] = useState<{
     points: number;
     combo: number;
     word: string;
   } | null>(null);
-  const [totalWordsFound, setTotalWordsFound] = useState(0);
   const [activeChallenges, setActiveChallenges] = useState<any[]>([]);
+  const [gameInitialized, setGameInitialized] = useState(false);
   
   const { playWordFoundSound, playComboSound, playLevelCompleteSound, playClickSound } = useAudio();
 
+  // Controller callbacks for game events
+  const controllerCallbacks = useMemo<GameControllerCallbacks>(() => ({
+    onWordFound: (word: string, points: number, combo: number) => {
+      setRewardPopup({ points, combo, word });
+      playWordFoundSound();
+      if (combo > 1) {
+        setTimeout(() => playComboSound(combo), 200);
+      }
+      setSuccessEffect('word');
+    },
+    onLevelComplete: () => {
+      playLevelCompleteSound();
+      setSuccessEffect('level');
+    },
+    onGameStateChange: () => {
+      // Force re-render when game state changes
+      setGameInitialized(prev => !prev);
+    },
+    onError: (error: string) => {
+      console.error('Game error:', error);
+    }
+  }), [playWordFoundSound, playComboSound, playLevelCompleteSound]);
+
   const generateNewGame = useCallback(async () => {
-    if (!player) return;
     setIsLoading(true);
     try {
-      const newGameData = await generateGameData(player.difficulty, player.preferences);
-      setGameData(newGameData);
-      setFoundWords(new Set());
+      await gameController.generateNewGame();
     } catch (error) {
       console.error('Failed to generate game:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [player]);
-
-  useEffect(() => {
-    if (player) {
-      generateNewGame();
-    }
-  }, [generateNewGame]);
-
-  const handlePlayerReady = useCallback((playerData: Player) => {
-    setPlayer(playerData);
-    // Show tutorial for first-time players
-    const hasSeenTutorial = localStorage.getItem('wordSearchTutorialSeen');
-    if (!hasSeenTutorial) {
-      setShowTutorial(true);
-    }
   }, []);
 
-  const saveScore = useCallback(() => {
-    if (!player) return;
-    
-    const scoreData = {
-      name: player.name,
-      age: player.age,
-      difficulty: player.difficulty,
-      score,
-      level,
-      date: new Date().toISOString()
-    };
-    
-    const existingScores = JSON.parse(localStorage.getItem('wordSearchScores') || '[]');
-    existingScores.push(scoreData);
-    existingScores.sort((a: any, b: any) => b.score - a.score);
-    localStorage.setItem('wordSearchScores', JSON.stringify(existingScores.slice(0, 10))); // Keep top 10
-  }, [player, score, level]);
-
-  const handleWordFound = useCallback((word: string) => {
-    if (!foundWords.has(word) && player) {
-      const newFoundWords = new Set(foundWords);
-      newFoundWords.add(word);
-      setFoundWords(newFoundWords);
+  const handlePlayerReady = useCallback(async (playerData: Player) => {
+    setIsLoading(true);
+    try {
+      await gameController.initialize(playerData, controllerCallbacks);
       
-      // Calculate combo based on timing
-      const currentTime = Date.now();
-      const timeDiff = currentTime - lastWordTime;
-      const newCombo = timeDiff < 10000 && lastWordTime > 0 ? combo + 1 : 1; // 10 second window
-      setCombo(newCombo);
-      setLastWordTime(currentTime);
-      
-      // Calculate score with combo multiplier
-      const basePoints = word.length * 10;
-      const difficultyMultiplier = player.difficulty === 'easy' ? 1 : player.difficulty === 'medium' ? 1.5 : 2;
-      const comboMultiplier = newCombo > 1 ? 1 + (newCombo - 1) * 0.5 : 1;
-      const points = Math.round(basePoints * difficultyMultiplier * comboMultiplier);
-      setScore(prev => prev + points);
-      
-      // Update total words found for challenges
-      setTotalWordsFound(prev => prev + 1);
-      
-      // Show reward popup
-      setRewardPopup({ points, combo: newCombo, word });
-      
-      // Play sounds
-      playWordFoundSound();
-      if (newCombo > 1) {
-        setTimeout(() => playComboSound(newCombo), 200);
+      // Show tutorial for first-time players
+      const hasSeenTutorial = localStorage.getItem('wordSearchTutorialSeen');
+      if (!hasSeenTutorial) {
+        setShowTutorial(true);
       }
-      
-      // Trigger word found effect
-      setSuccessEffect('word');
+    } catch (error) {
+      console.error('Failed to initialize game:', error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [foundWords, player, combo, lastWordTime, playWordFoundSound, playComboSound]);
+  }, [controllerCallbacks]);
 
-  const handleLevelComplete = useCallback(() => {
-    setLevel(prev => prev + 1);
-    saveScore();
-    
-    // Reset combo on level complete
-    setCombo(0);
-    setLastWordTime(0);
-    
-    // Play level complete sound
-    playLevelCompleteSound();
-    
-    // Trigger level complete effect
-    setSuccessEffect('level');
-    
-    // Increase difficulty every 3 levels
-    if (level % 3 === 0 && player) {
-      const newPlayer = { ...player };
-      if (player.difficulty === 'easy') newPlayer.difficulty = 'medium';
-      else if (player.difficulty === 'medium') newPlayer.difficulty = 'hard';
-      setPlayer(newPlayer);
-    }
-    
-    // Delay new game generation to show effects
-    setTimeout(() => {
-      generateNewGame();
-    }, 2000);
-  }, [level, player, generateNewGame, saveScore, playLevelCompleteSound]);
+  const handleWordSelection = useCallback((selectedCells: CellPosition[]) => {
+    gameController.handleWordSelection(selectedCells);
+  }, []);
 
-  useEffect(() => {
-    if (gameData && foundWords.size === gameData.wordsToFind.length) {
-      setTimeout(handleLevelComplete, 1000);
-    }
-  }, [foundWords.size, gameData, handleLevelComplete]);
-
-  const getDifficultyColor = (diff: Difficulty) => {
-    switch (diff) {
-      case 'easy': return 'bg-secondary';
-      case 'medium': return 'bg-accent';
-      case 'hard': return 'bg-destructive';
-    }
-  };
-
-  const getDifficultyLabel = (diff: Difficulty) => {
-    switch (diff) {
-      case 'easy': return '6-8 years';
-      case 'medium': return '9-12 years';
-      case 'hard': return '13+ years';
-    }
-  };
+  // Get current game state from controller
+  const gameData = gameController.getGameData();
+  const player = gameController.getPlayer();
+  const stats = gameController.getStats();
+  const foundWords = gameController.getFoundWords();
+  const foundPaths = gameController.getFoundPaths();
 
   // Show age selection if no player is set
   if (!player) {
@@ -219,16 +135,16 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
               </div>
               
               <div className="flex items-center gap-3">
-                <Badge variant="outline" className={getDifficultyColor(player.difficulty)}>
-                  {getDifficultyLabel(player.difficulty)}
+                <Badge variant="outline" className={gameController.getDifficultyColor(player.difficulty)}>
+                  {gameController.getDifficultyLabel(player.difficulty)}
                 </Badge>
                 <div className="flex items-center gap-2 bg-game-grid px-3 py-2 rounded-lg">
                   <Trophy className="w-4 h-4 text-accent" />
-                  <span className="font-semibold">{score}</span>
+                  <span className="font-semibold">{stats.score}</span>
                 </div>
                 <div className="flex items-center gap-2 bg-game-grid px-3 py-2 rounded-lg">
                   <Zap className="w-4 h-4 text-primary" />
-                  <span className="font-semibold">Level {level}</span>
+                  <span className="font-semibold">Level {stats.level}</span>
                 </div>
               </div>
             </div>
@@ -242,8 +158,9 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
               <WordSearchGrid
                 grid={gameData.grid}
                 wordsToFind={gameData.wordsToFind}
-                onWordFound={handleWordFound}
+                onWordFound={handleWordSelection}
                 foundWords={foundWords}
+                foundPaths={foundPaths}
               />
             </Card>
           </div>
@@ -252,25 +169,25 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
           <div className="space-y-4">
             {/* Progression System */}
             <ProgressionSystem
-              currentLevel={level}
-              totalScore={score}
+              currentLevel={stats.level}
+              totalScore={stats.score}
             />
             
             {/* Daily Challenges */}
             <DailyChallenges
               onChallengeAccept={(challenge) => setActiveChallenges(prev => [...prev, challenge])}
               gameStats={{
-                wordsFound: totalWordsFound,
-                level,
-                score,
-                combo
+                wordsFound: stats.totalWordsFound,
+                level: stats.level,
+                score: stats.score,
+                combo: stats.combo
               }}
             />
             
             {/* Combo Meter */}
-            {combo > 1 && (
+            {stats.combo > 1 && (
               <div className="animate-scale-in">
-                <ComboMeter combo={combo} onComboReset={() => setCombo(0)} />
+                <ComboMeter combo={stats.combo} onComboReset={() => gameController.resetCombo()} />
               </div>
             )}
             
@@ -311,7 +228,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
                     <div
                       className="bg-gradient-success h-2 rounded-full transition-all duration-500"
                       style={{
-                        width: `${(foundWords.size / gameData.wordsToFind.length) * 100}%`
+                        width: `${gameController.getProgressPercentage()}%`
                       }}
                     />
                   </div>
@@ -321,7 +238,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
                   <div className="text-center p-3 bg-gradient-success text-secondary-foreground rounded-lg animate-word-found">
                     <Trophy className="w-6 h-6 mx-auto mb-2" />
                     <p className="font-semibold">Level Complete!</p>
-                    <p className="text-sm opacity-90">Advancing to level {level + 1}...</p>
+                    <p className="text-sm opacity-90">Advancing to level {stats.level + 1}...</p>
                   </div>
                 )}
               </div>
@@ -354,8 +271,6 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
               onClick={() => {
                 playClickSound();
                 generateNewGame();
-                setCombo(0);
-                setLastWordTime(0);
               }}
               disabled={isLoading}
               className="w-full bg-gradient-primary hover:shadow-game transition-all duration-300 hover:scale-105 active:scale-95"
