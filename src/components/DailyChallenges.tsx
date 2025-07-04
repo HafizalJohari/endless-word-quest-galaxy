@@ -14,7 +14,7 @@ interface DailyChallenge {
   current: number;
   reward: number;
   completed: boolean;
-  icon: React.ReactNode;
+  iconType: 'target' | 'star' | 'trophy';
 }
 
 interface DailyChallengesProps {
@@ -52,7 +52,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
         current: 0,
         reward: 500,
         completed: false,
-        icon: <Target className="w-5 h-5" />
+        iconType: 'target'
       },
       {
         id: 'combo_king',
@@ -63,7 +63,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
         current: 0,
         reward: 300,
         completed: false,
-        icon: <Star className="w-5 h-5" />
+        iconType: 'star'
       },
       {
         id: 'level_crusher',
@@ -74,7 +74,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
         current: 0,
         reward: 400,
         completed: false,
-        icon: <Trophy className="w-5 h-5" />
+        iconType: 'trophy'
       }
     ];
 
@@ -140,6 +140,19 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
     return `${hours}h ${minutes}m`;
   };
 
+  const getIcon = (iconType: string) => {
+    switch (iconType) {
+      case 'target':
+        return <Target className="w-5 h-5" />;
+      case 'star':
+        return <Star className="w-5 h-5" />;
+      case 'trophy':
+        return <Trophy className="w-5 h-5" />;
+      default:
+        return <Target className="w-5 h-5" />;
+    }
+  };
+
   const completedCount = challenges.filter(c => c.completed).length;
   const totalRewards = challenges.reduce((sum, c) => sum + (c.completed ? c.reward : 0), 0);
 
@@ -188,7 +201,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
                   ? 'bg-secondary text-secondary-foreground' 
                   : 'bg-accent text-accent-foreground'
               }`}>
-                {challenge.icon}
+                {getIcon(challenge.iconType)}
               </div>
               
               <div className="flex-1 space-y-2">
