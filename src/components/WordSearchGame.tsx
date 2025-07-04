@@ -167,30 +167,6 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
 
           {/* Sidebar */}
           <div className="space-y-4">
-            {/* Progression System */}
-            <ProgressionSystem
-              currentLevel={stats.level}
-              totalScore={stats.score}
-            />
-            
-            {/* Daily Challenges */}
-            <DailyChallenges
-              onChallengeAccept={(challenge) => setActiveChallenges(prev => [...prev, challenge])}
-              gameStats={{
-                wordsFound: stats.totalWordsFound,
-                level: stats.level,
-                score: stats.score,
-                combo: stats.combo
-              }}
-            />
-            
-            {/* Combo Meter */}
-            {stats.combo > 1 && (
-              <div className="animate-scale-in">
-                <ComboMeter combo={stats.combo} onComboReset={() => gameController.resetCombo()} />
-              </div>
-            )}
-            
             {/* Words List */}
             <Card className="p-4 shadow-card animate-fade-in">
               <div className="flex items-center justify-between mb-4">
@@ -214,6 +190,30 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
                 ))}
               </div>
             </Card>
+
+            {/* Progression System */}
+            <ProgressionSystem
+              currentLevel={stats.level}
+              totalScore={stats.score}
+            />
+            
+            {/* Daily Challenges */}
+            <DailyChallenges
+              onChallengeAccept={(challenge) => setActiveChallenges(prev => [...prev, challenge])}
+              gameStats={{
+                wordsFound: stats.totalWordsFound,
+                level: stats.level,
+                score: stats.score,
+                combo: stats.combo
+              }}
+            />
+            
+            {/* Combo Meter */}
+            {stats.combo > 1 && (
+              <div className="animate-scale-in">
+                <ComboMeter combo={stats.combo} onComboReset={() => gameController.resetCombo()} />
+              </div>
+            )}
 
             {/* Progress */}
             <Card className="p-4 shadow-card animate-fade-in">
