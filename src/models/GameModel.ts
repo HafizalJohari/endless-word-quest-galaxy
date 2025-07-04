@@ -3,6 +3,8 @@
 
 import { WordTrie, createWordValidator } from '../lib/wordValidation';
 import { generateGameData, type GameData, type Difficulty } from '../lib/gameGenerator';
+import { PowerupSystem } from '../lib/powerupSystem';
+import { type PowerupType } from '../types/powerups';
 
 export interface Player {
   name: string;
@@ -52,6 +54,8 @@ export class GameModel {
   };
   private lastWordTime = 0;
   private observers: Array<() => void> = [];
+  private powerupSystem: PowerupSystem = new PowerupSystem();
+  private comboTimeExtension = 0;
 
   // Observable pattern for state changes
   subscribe(callback: () => void): () => void {
@@ -105,6 +109,10 @@ export class GameModel {
     // Create optimized word validator
     this.wordValidator = createWordValidator(this.gameData.wordsToFind);
     
+    // Reset power-ups for new game
+    this.powerupSystem.reset();
+    this.comboTimeExtension = 0;
+    
     this.notifyObservers();
   }
 
@@ -138,10 +146,11 @@ export class GameModel {
       return { isValid: false };
     }
 
-    // Calculate scoring with combo system
+    // Calculate scoring with combo system (with power-up extension)
     const currentTime = Date.now();
     const timeDiff = currentTime - this.lastWordTime;
-    const newCombo = timeDiff < 10000 && this.lastWordTime > 0 ? this.stats.combo + 1 : 1;
+    const comboWindow = 10000 + this.comboTimeExtension; // Base 10s + power-up extension
+    const newCombo = timeDiff < comboWindow && this.lastWordTime > 0 ? this.stats.combo + 1 : 1;
     
     const basePoints = foundWord.length * 10;
     const difficultyMultiplier = this.getDifficultyMultiplier();
@@ -190,6 +199,7 @@ export class GameModel {
     this.stats.combo = 0;
     this.stats.currentStreak = 0;
     this.lastWordTime = 0;
+    this.comboTimeExtension = 0;
     
     // Auto-increase difficulty every 3 levels
     if (this.stats.level % 3 === 0 && this.player) {
@@ -213,6 +223,7 @@ export class GameModel {
   resetCombo(): void {
     this.stats.combo = 0;
     this.stats.currentStreak = 0;
+    this.comboTimeExtension = 0;
     this.notifyObservers();
   }
 
@@ -252,6 +263,39 @@ export class GameModel {
     }).length;
 
     return { wordValidatorMemory, gameStateSize };
+  }
+
+  // Power-up system integration
+  getPowerupSystem(): PowerupSystem {
+    return this.powerupSystem;
+  }
+
+  usePowerup(powerupType: PowerupType): { success: boolean; result?: any; newGrid?: string[][] } {
+    if (!this.gameData) return { success: false };
+
+    const result = this.powerupSystem.usePowerup(powerupType, {
+      grid: this.gameData.grid,
+      wordsToFind: this.gameData.wordsToFind,
+      foundWords: this.foundWords,
+      playerScore: this.stats.score,
+      gameLevel: this.stats.level
+    });
+
+    if (result.success) {
+      // Handle specific power-up effects
+      if (powerupType === 'time-saver' && result.result?.comboExtension) {
+        this.comboTimeExtension += result.result.comboExtension;
+      }
+      
+      if (powerupType === 'shuffle' && result.newGrid) {
+        // Update grid with shuffled version
+        this.gameData.grid = result.newGrid;
+      }
+
+      this.notifyObservers();
+    }
+
+    return result;
   }
 
   // Cleanup for memory management

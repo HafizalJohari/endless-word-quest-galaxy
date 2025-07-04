@@ -3,12 +3,14 @@
 
 import { GameModel, type Player, type CellPosition } from '../models/GameModel';
 import { performanceMonitor } from '../lib/performance';
+import { type PowerupType } from '../types/powerups';
 
 export interface GameControllerCallbacks {
   onWordFound?: (word: string, points: number, combo: number) => void;
   onLevelComplete?: () => void;
   onGameStateChange?: () => void;
   onError?: (error: string) => void;
+  onPowerupUsed?: (powerupType: PowerupType, result: any) => void;
 }
 
 export class GameController {
@@ -135,6 +137,21 @@ export class GameController {
   // Game actions
   resetCombo(): void {
     this.model.resetCombo();
+  }
+
+  // Power-up system integration
+  usePowerup(powerupType: PowerupType): boolean {
+    const result = this.model.usePowerup(powerupType);
+    
+    if (result.success && this.callbacks?.onPowerupUsed) {
+      this.callbacks.onPowerupUsed(powerupType, result.result);
+    }
+    
+    return result.success;
+  }
+
+  getPowerupSystem() {
+    return this.model.getPowerupSystem();
   }
 
   // Performance monitoring

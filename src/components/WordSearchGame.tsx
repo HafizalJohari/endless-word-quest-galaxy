@@ -12,10 +12,13 @@ import { ComboMeter } from './ComboMeter';
 import { RewardPopup } from './RewardPopup';
 import { ProgressionSystem } from './ProgressionSystem';
 import { DailyChallenges } from './DailyChallenges';
+import { PowerupBar } from './PowerupBar';
 import { useAudio } from '../hooks/useAudio';
+import { usePowerups } from '../hooks/usePowerups';
 import { gameController, type GameControllerCallbacks } from '../controllers/GameController';
 import { type Player, type CellPosition } from '../models/GameModel';
 import { type Difficulty } from '../lib/gameGenerator';
+import { type PowerupType } from '../types/powerups';
 
 interface WordSearchGameProps {
   className?: string;
@@ -97,6 +100,38 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
   const stats = gameController.getStats();
   const foundWords = gameController.getFoundWords();
   const foundPaths = gameController.getFoundPaths();
+
+  // Power-ups integration
+  const powerupsHookData = gameData && {
+    grid: gameData.grid,
+    wordsToFind: gameData.wordsToFind,
+    foundWords,
+    playerScore: stats.score,
+    gameLevel: stats.level
+  };
+
+  const {
+    powerupStates,
+    usePowerup,
+    canUsePowerup,
+    getRemainingCooldown,
+    resetPowerups,
+    isProcessing
+  } = usePowerups({
+    gameData: powerupsHookData,
+    onPowerupUsed: (powerupType: PowerupType, result: any, newGrid?: string[][]) => {
+      // Handle power-up effects
+      if (powerupType === 'hint' && result?.word) {
+        // Could show hint UI feedback here
+        console.log('Hint used for word:', result.word);
+      }
+      
+      if (newGrid) {
+        // Grid was shuffled, trigger re-render
+        generateNewGame();
+      }
+    }
+  });
 
   // Show age selection if no player is set
   if (!player) {
@@ -190,6 +225,16 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
                 ))}
               </div>
             </Card>
+
+            {/* Power-ups */}
+            <PowerupBar
+              powerupStates={powerupStates}
+              canUsePowerup={canUsePowerup}
+              getRemainingCooldown={getRemainingCooldown}
+              onUsePowerup={usePowerup}
+              playerScore={stats.score}
+              isProcessing={isProcessing}
+            />
 
             {/* Progression System */}
             <ProgressionSystem
