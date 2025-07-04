@@ -10,6 +10,8 @@ import { SuccessEffects } from './SuccessEffects';
 import { Tutorial } from './Tutorial';
 import { ComboMeter } from './ComboMeter';
 import { RewardPopup } from './RewardPopup';
+import { ProgressionSystem } from './ProgressionSystem';
+import { DailyChallenges } from './DailyChallenges';
 import { useAudio } from '../hooks/useAudio';
 import { generateGameData, type GameData, type Difficulty } from '../lib/gameGenerator';
 
@@ -41,6 +43,8 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
     combo: number;
     word: string;
   } | null>(null);
+  const [totalWordsFound, setTotalWordsFound] = useState(0);
+  const [activeChallenges, setActiveChallenges] = useState<any[]>([]);
   
   const { playWordFoundSound, playComboSound, playLevelCompleteSound, playClickSound } = useAudio();
 
@@ -110,6 +114,9 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
       const comboMultiplier = newCombo > 1 ? 1 + (newCombo - 1) * 0.5 : 1;
       const points = Math.round(basePoints * difficultyMultiplier * comboMultiplier);
       setScore(prev => prev + points);
+      
+      // Update total words found for challenges
+      setTotalWordsFound(prev => prev + 1);
       
       // Show reward popup
       setRewardPopup({ points, combo: newCombo, word });
@@ -243,6 +250,23 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
 
           {/* Sidebar */}
           <div className="space-y-4">
+            {/* Progression System */}
+            <ProgressionSystem
+              currentLevel={level}
+              totalScore={score}
+            />
+            
+            {/* Daily Challenges */}
+            <DailyChallenges
+              onChallengeAccept={(challenge) => setActiveChallenges(prev => [...prev, challenge])}
+              gameStats={{
+                wordsFound: totalWordsFound,
+                level,
+                score,
+                combo
+              }}
+            />
+            
             {/* Combo Meter */}
             {combo > 1 && (
               <div className="animate-scale-in">

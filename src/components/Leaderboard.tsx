@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trophy, Medal, Crown, Zap, X } from 'lucide-react';
+import { Trophy, Medal, Crown, Zap, X, Share, Facebook } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { type Difficulty } from '../lib/gameGenerator';
 
 interface ScoreEntry {
@@ -20,6 +21,7 @@ interface LeaderboardProps {
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => {
   const [scores, setScores] = useState<ScoreEntry[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
@@ -42,6 +44,27 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => 
       case 'easy': return 'text-green-400';
       case 'medium': return 'text-yellow-400';
       case 'hard': return 'text-red-400';
+    }
+  };
+
+  const shareScore = (entry: ScoreEntry, platform: 'whatsapp' | 'facebook' | 'copy') => {
+    const message = `🎯 I just scored ${entry.score} points in Word Search Infinity! Reached level ${entry.level} on ${entry.difficulty} difficulty. Can you beat my score? 🏆`;
+    
+    switch (platform) {
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin)}&quote=${encodeURIComponent(message)}`, '_blank');
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(message).then(() => {
+          toast({
+            title: "Score copied!",
+            description: "Your score has been copied to clipboard.",
+          });
+        });
+        break;
     }
   };
 
@@ -107,10 +130,41 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ isOpen, onClose }) => 
                       </div>
                     </div>
                     
-                    <div className="text-right">
+                    <div className="text-right space-y-2">
                       <div className="flex items-center gap-2 text-xl font-bold text-accent">
                         <Zap className="w-5 h-5" />
                         {entry.score}
+                      </div>
+                      
+                      {/* Share buttons */}
+                      <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => shareScore(entry, 'whatsapp')}
+                          className="hover:bg-green-100 hover:text-green-600 p-1 h-8 w-8"
+                          title="Share on WhatsApp"
+                        >
+                          <Share className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => shareScore(entry, 'facebook')}
+                          className="hover:bg-blue-100 hover:text-blue-600 p-1 h-8 w-8"
+                          title="Share on Facebook"
+                        >
+                          <Facebook className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => shareScore(entry, 'copy')}
+                          className="hover:bg-accent/20 hover:text-accent p-1 h-8 w-8"
+                          title="Copy to clipboard"
+                        >
+                          <X className="w-3 h-3 rotate-45" />
+                        </Button>
                       </div>
                     </div>
                   </div>
