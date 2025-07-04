@@ -206,7 +206,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6 animate-fade-in">
-          <Card className="p-6 shadow-card">
+          <Card className="card-elevated p-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="bg-gradient-primary text-primary-foreground p-3 rounded-full shadow-game">
@@ -238,7 +238,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Game Grid */}
           <div className="lg:col-span-3">
-            <Card className="p-6 shadow-game animate-scale-in">
+            <Card className="card-game p-6 animate-scale-in">
               <WordSearchGrid
                 grid={gameData.grid}
                 wordsToFind={gameData.wordsToFind}
@@ -275,7 +275,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
             )}
             
             {/* Words List */}
-            <Card className="p-4 shadow-card animate-fade-in">
+            <Card className="card-elevated p-4 animate-fade-in">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-foreground">Find These Words</h3>
                 <span className="text-sm text-muted-foreground">
@@ -299,7 +299,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
             </Card>
 
             {/* Progress */}
-            <Card className="p-4 shadow-card animate-fade-in">
+            <Card className="progress-card p-4 animate-fade-in">
               <h3 className="font-semibold text-foreground mb-3">Progress</h3>
               <div className="space-y-3">
                 <div>

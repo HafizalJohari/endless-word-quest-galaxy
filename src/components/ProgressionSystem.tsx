@@ -107,10 +107,10 @@ export const ProgressionSystem: React.FC<ProgressionSystemProps> = ({
 
   return (
     <div className="space-y-4">
-      <Card className="p-4 shadow-card">
+      <Card className="card-elevated p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-foreground">Progression</h3>
-          <Badge variant="outline" className="bg-gradient-primary text-primary-foreground">
+          <Badge variant="outline" className="bg-primary text-primary-foreground border-primary/20">
             Level {currentLevel}
           </Badge>
         </div>
@@ -126,16 +126,16 @@ export const ProgressionSystem: React.FC<ProgressionSystemProps> = ({
         )}
       </Card>
 
-      <Card className="p-4 shadow-card">
+      <Card className="milestone-card p-4">
         <h3 className="font-semibold text-foreground mb-3">Milestones</h3>
         <div className="space-y-3">
           {milestones.map((milestone) => (
             <div
               key={milestone.level}
-              className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 ${
+              className={`flex items-center gap-3 p-3 rounded-lg border transition-all duration-300 ${
                 milestone.unlocked 
-                  ? 'bg-game-found border border-secondary/20' 
-                  : 'bg-game-grid border border-border'
+                  ? 'bg-secondary/10 border-secondary/20 shadow-sm' 
+                  : 'bg-muted/50 border-border'
               }`}
             >
               <div className={`p-2 rounded-full ${
@@ -173,9 +173,9 @@ export const ProgressionSystem: React.FC<ProgressionSystemProps> = ({
           key={`unlock-${unlock.level}`}
           className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 animate-scale-in"
         >
-          <Card className="p-6 bg-card/95 backdrop-blur-sm border-2 border-accent shadow-game min-w-[300px]">
+          <Card className="card-elevated p-6 min-w-[300px]">
             <div className="text-center space-y-3">
-              <div className="bg-gradient-primary text-primary-foreground p-4 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
+              <div className="bg-gradient-primary text-primary-foreground p-4 rounded-full w-16 h-16 mx-auto flex items-center justify-center shadow-game">
                 <Gift className="w-8 h-8" />
               </div>
               <div>
