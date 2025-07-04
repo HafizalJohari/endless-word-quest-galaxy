@@ -211,26 +211,31 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
                 </span>
               </div>
               <div className="space-y-2 max-h-60 overflow-y-auto">
-                {gameData.wordsToFind.map((word) => (
-                  <div
-                    key={word}
-                    className={`px-3 py-2 rounded-xl transition-all duration-500 flex items-center justify-between ${
-                      foundWords.has(word)
-                        ? 'bg-game-found text-secondary-foreground animate-word-found border-2 border-secondary/30'
-                        : 'bg-game-grid text-foreground hover:bg-game-cell-hover border-2 border-transparent'
-                    }`}
-                  >
-                    <span className={foundWords.has(word) ? 'line-through font-medium' : 'font-medium'}>
-                      {word.toUpperCase()}
-                    </span>
-                    {foundWords.has(word) && (
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-secondary rounded-full animate-pulse-success"></div>
-                        <span className="text-xs text-secondary font-bold">✓</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                {gameData.wordsToFind.map((word) => {
+                  const isFound = foundWords.has(word);
+                  console.log(`Word: ${word}, Found: ${isFound}`, foundWords);
+                  
+                  return (
+                    <div
+                      key={word}
+                      className={`px-3 py-2 rounded-xl transition-all duration-500 flex items-center justify-between ${
+                        isFound
+                          ? 'bg-game-found text-secondary-foreground animate-word-found border-2 border-secondary/30'
+                          : 'bg-game-grid text-foreground hover:bg-game-cell-hover border-2 border-transparent'
+                      }`}
+                    >
+                      <span className={isFound ? 'line-through font-medium' : 'font-medium'}>
+                        {word.toUpperCase()}
+                      </span>
+                      {isFound && (
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-secondary rounded-full animate-pulse-success"></div>
+                          <span className="text-xs text-secondary font-bold">✓</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </Card>
 
