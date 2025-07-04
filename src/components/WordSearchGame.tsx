@@ -213,26 +213,19 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {gameData.wordsToFind.map((word) => {
                   const isFound = foundWords.has(word);
-                  console.log(`Word: ${word}, Found: ${isFound}`, foundWords);
                   
                   return (
                     <div
                       key={word}
-                      className={`px-3 py-2 rounded-xl transition-all duration-500 flex items-center justify-between ${
+                      className={`px-3 py-2 rounded-xl transition-all duration-300 ${
                         isFound
-                          ? 'bg-game-found text-secondary-foreground animate-word-found border-2 border-secondary/30'
-                          : 'bg-game-grid text-foreground hover:bg-game-cell-hover border-2 border-transparent'
+                          ? 'bg-secondary/20 text-muted-foreground'
+                          : 'bg-game-grid text-foreground hover:bg-game-cell-hover'
                       }`}
                     >
-                      <span className={isFound ? 'line-through font-medium' : 'font-medium'}>
+                      <span className={`font-medium ${isFound ? 'line-through animate-pulse' : ''}`}>
                         {word.toUpperCase()}
                       </span>
-                      {isFound && (
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-secondary rounded-full animate-pulse-success"></div>
-                          <span className="text-xs text-secondary font-bold">✓</span>
-                        </div>
-                      )}
                     </div>
                   );
                 })}
