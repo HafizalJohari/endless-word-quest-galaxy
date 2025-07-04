@@ -26,7 +26,7 @@ export const PowerupBar: React.FC<PowerupBarProps> = ({
   const powerupTypes = Object.keys(POWERUP_CONFIGS) as PowerupType[];
 
   return (
-    <Card className={`p-4 shadow-card animate-fade-in ${className}`}>
+    <Card className={`p-4 shadow-card animate-fade-in rounded-2xl ${className}`}>
       <div className="flex items-center gap-3 mb-3">
         <div className="flex items-center gap-2">
           <Zap className="w-4 h-4 text-primary" />

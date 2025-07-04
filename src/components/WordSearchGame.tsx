@@ -157,7 +157,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6 animate-fade-in">
-          <Card className="p-6 shadow-card">
+          <Card className="p-6 shadow-card rounded-2xl">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="bg-gradient-primary text-primary-foreground p-3 rounded-full shadow-game">
@@ -189,7 +189,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Game Grid */}
           <div className="lg:col-span-3">
-            <Card className="p-6 shadow-game animate-scale-in">
+            <Card className="p-6 shadow-game animate-scale-in rounded-2xl">
               <WordSearchGrid
                 grid={gameData.grid}
                 wordsToFind={gameData.wordsToFind}
@@ -203,7 +203,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
           {/* Sidebar */}
           <div className="space-y-4">
             {/* Words List */}
-            <Card className="p-4 shadow-card animate-fade-in">
+            <Card className="p-4 shadow-card animate-fade-in rounded-2xl">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-foreground">Find These Words</h3>
                 <span className="text-sm text-muted-foreground">
@@ -214,13 +214,21 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
                 {gameData.wordsToFind.map((word) => (
                   <div
                     key={word}
-                    className={`px-3 py-2 rounded-lg transition-all duration-300 ${
+                    className={`px-3 py-2 rounded-xl transition-all duration-500 flex items-center justify-between ${
                       foundWords.has(word)
-                        ? 'bg-game-found text-secondary-foreground line-through animate-pulse-success'
-                        : 'bg-game-grid text-foreground hover:bg-game-cell-hover'
+                        ? 'bg-game-found text-secondary-foreground animate-word-found border-2 border-secondary/30'
+                        : 'bg-game-grid text-foreground hover:bg-game-cell-hover border-2 border-transparent'
                     }`}
                   >
-                    {word.toUpperCase()}
+                    <span className={foundWords.has(word) ? 'line-through font-medium' : 'font-medium'}>
+                      {word.toUpperCase()}
+                    </span>
+                    {foundWords.has(word) && (
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-secondary rounded-full animate-pulse-success"></div>
+                        <span className="text-xs text-secondary font-bold">✓</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -261,7 +269,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
             )}
 
             {/* Progress */}
-            <Card className="p-4 shadow-card animate-fade-in">
+            <Card className="p-4 shadow-card animate-fade-in rounded-2xl">
               <h3 className="font-semibold text-foreground mb-3">Progress</h3>
               <div className="space-y-3">
                 <div>

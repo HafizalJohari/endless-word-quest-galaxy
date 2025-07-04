@@ -54,7 +54,7 @@ export const PowerupButton: React.FC<PowerupButtonProps> = ({
         disabled={isDisabled}
         variant={getButtonVariant()}
         size="sm"
-        className={`flex flex-col items-center gap-1 h-auto p-3 min-w-[80px] transition-all duration-200 ${
+        className={`flex flex-col items-center gap-1 h-auto p-3 min-w-[80px] rounded-xl transition-all duration-200 ${
           canUse && !state.isOnCooldown ? 'hover:scale-105' : ''
         }`}
         title={config.description}
@@ -70,7 +70,7 @@ export const PowerupButton: React.FC<PowerupButtonProps> = ({
       </Button>
       
       {state.isOnCooldown && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-md">
+        <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-xl">
           <span className="text-xs font-bold text-muted-foreground">
             {cooldownSeconds}s
           </span>
