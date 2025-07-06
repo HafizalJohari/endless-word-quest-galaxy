@@ -14,7 +14,7 @@ interface DailyChallenge {
   current: number;
   reward: number;
   completed: boolean;
-  iconType: 'target' | 'star' | 'trophy';
+  icon: React.ReactNode;
 }
 
 interface DailyChallengesProps {
@@ -52,7 +52,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
         current: 0,
         reward: 500,
         completed: false,
-        iconType: 'target'
+        icon: <Target className="w-5 h-5" />
       },
       {
         id: 'combo_king',
@@ -63,7 +63,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
         current: 0,
         reward: 300,
         completed: false,
-        iconType: 'star'
+        icon: <Star className="w-5 h-5" />
       },
       {
         id: 'level_crusher',
@@ -74,7 +74,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
         current: 0,
         reward: 400,
         completed: false,
-        iconType: 'trophy'
+        icon: <Trophy className="w-5 h-5" />
       }
     ];
 
@@ -140,24 +140,11 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
     return `${hours}h ${minutes}m`;
   };
 
-  const getIcon = (iconType: string) => {
-    switch (iconType) {
-      case 'target':
-        return <Target className="w-5 h-5" />;
-      case 'star':
-        return <Star className="w-5 h-5" />;
-      case 'trophy':
-        return <Trophy className="w-5 h-5" />;
-      default:
-        return <Target className="w-5 h-5" />;
-    }
-  };
-
   const completedCount = challenges.filter(c => c.completed).length;
   const totalRewards = challenges.reduce((sum, c) => sum + (c.completed ? c.reward : 0), 0);
 
   return (
-    <Card className="p-4 shadow-card">
+    <Card className="challenge-card p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-accent" />
@@ -169,7 +156,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
         </div>
       </div>
 
-      <div className="mb-4 p-3 bg-game-grid rounded-lg">
+      <div className="mb-4 p-3 bg-muted/30 rounded-lg border border-border">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium">Progress Today</span>
           <span className="text-sm text-accent">{completedCount}/{challenges.length}</span>
@@ -189,10 +176,10 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
             key={challenge.id}
             className={`p-3 rounded-lg border transition-all duration-300 ${
               challenge.completed
-                ? 'bg-game-found border-secondary/20'
+                ? 'bg-secondary/10 border-secondary/20 shadow-sm'
                 : activeChallenges.has(challenge.id)
-                ? 'bg-game-highlight border-accent/20'
-                : 'bg-game-grid border-border'
+                ? 'bg-accent/10 border-accent/20 shadow-sm'
+                : 'bg-muted/30 border-border'
             }`}
           >
             <div className="flex items-start gap-3">
@@ -201,7 +188,7 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
                   ? 'bg-secondary text-secondary-foreground' 
                   : 'bg-accent text-accent-foreground'
               }`}>
-                {getIcon(challenge.iconType)}
+                {challenge.icon}
               </div>
               
               <div className="flex-1 space-y-2">

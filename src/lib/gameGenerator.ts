@@ -58,14 +58,7 @@ const THEMES: ThemeWordList = {
   }
 };
 
-const getGridSize = (difficulty: Difficulty): number => {
-  switch (difficulty) {
-    case 'easy': return 8;   // 6-8 years
-    case 'medium': return 10; // 9-12 years
-    case 'hard': return 12;   // 13+ years
-    default: return 10;
-  }
-};
+const GRID_SIZE = 12;
 
 const getRandomTheme = (): string => {
   const themes = Object.keys(THEMES);
@@ -114,8 +107,8 @@ const getRandomWords = (wordList: string[], count: number): string[] => {
   return shuffled.slice(0, Math.min(count, wordList.length));
 };
 
-const createEmptyGrid = (gridSize: number): string[][] => {
-  return Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
+const createEmptyGrid = (): string[][] => {
+  return Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(''));
 };
 
 const getRandomLetter = (): string => {
@@ -127,8 +120,7 @@ const canPlaceWord = (
   word: string,
   row: number,
   col: number,
-  direction: [number, number],
-  gridSize: number
+  direction: [number, number]
 ): boolean => {
   const [dRow, dCol] = direction;
   
@@ -137,8 +129,8 @@ const canPlaceWord = (
     const newCol = col + i * dCol;
     
     if (
-      newRow < 0 || newRow >= gridSize ||
-      newCol < 0 || newCol >= gridSize ||
+      newRow < 0 || newRow >= GRID_SIZE ||
+      newCol < 0 || newCol >= GRID_SIZE ||
       (grid[newRow][newCol] !== '' && grid[newRow][newCol] !== word[i].toUpperCase())
     ) {
       return false;
@@ -177,8 +169,8 @@ const getDirections = (): [number, number][] => {
   ];
 };
 
-const placeWordsInGrid = (words: string[], gridSize: number): string[][] => {
-  const grid = createEmptyGrid(gridSize);
+const placeWordsInGrid = (words: string[]): string[][] => {
+  const grid = createEmptyGrid();
   const directions = getDirections();
   const placedWords: string[] = [];
   
@@ -189,10 +181,10 @@ const placeWordsInGrid = (words: string[], gridSize: number): string[][] => {
     
     while (!placed && attempts < maxAttempts) {
       const direction = directions[Math.floor(Math.random() * directions.length)];
-      const row = Math.floor(Math.random() * gridSize);
-      const col = Math.floor(Math.random() * gridSize);
+      const row = Math.floor(Math.random() * GRID_SIZE);
+      const col = Math.floor(Math.random() * GRID_SIZE);
       
-      if (canPlaceWord(grid, word, row, col, direction, gridSize)) {
+      if (canPlaceWord(grid, word, row, col, direction)) {
         placeWord(grid, word, row, col, direction);
         placedWords.push(word);
         placed = true;
@@ -203,8 +195,8 @@ const placeWordsInGrid = (words: string[], gridSize: number): string[][] => {
   }
   
   // Fill empty cells with random letters
-  for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize; col++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
       if (grid[row][col] === '') {
         grid[row][col] = getRandomLetter();
       }
@@ -250,13 +242,12 @@ export const generateGameData = async (difficulty: Difficulty, preferences: stri
   await new Promise(resolve => setTimeout(resolve, 500));
   
   const theme = getPreferredTheme(preferences);
-  const gridSize = getGridSize(difficulty);
   
-  // Adjust word count based on grid size for better balance
-  const wordCount = gridSize === 8 ? 8 : gridSize === 10 ? 10 : 12;
+  // Always find 12 words for consistent challenge
+  const wordCount = 12;
   
   const words = getWordsForDifficulty(theme, difficulty, wordCount);
-  const grid = placeWordsInGrid(words, gridSize);
+  const grid = placeWordsInGrid(words);
   
   return {
     grid,

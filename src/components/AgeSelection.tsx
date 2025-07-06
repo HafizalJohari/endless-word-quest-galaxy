@@ -213,6 +213,44 @@ export const AgeSelection: React.FC<AgeSelectionProps> = ({ onPlayerReady }) => 
             </div>
           </div>
 
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-border"></div>
+            <span className="text-sm text-muted-foreground">or choose</span>
+            <div className="flex-1 h-px bg-border"></div>
+          </div>
+
+          {/* Age Range Selection */}
+          <div className="space-y-3">
+            <Label className="text-base font-semibold">Select your age group:</Label>
+            <RadioGroup value={selectedRange} onValueChange={(value) => {
+              setSelectedRange(value);
+              setSelectedAge('');
+            }}>
+              {ageRanges.map(({ value, label, icon: Icon, description }) => (
+                <div key={value} className="flex items-center space-x-3 p-3 rounded-lg border border-input hover:bg-accent/50 transition-colors">
+                  <RadioGroupItem value={value} id={value} />
+                  <div className="flex items-center gap-3 flex-1">
+                    <Icon className="w-5 h-5 text-primary" />
+                    <div>
+                      <Label htmlFor={value} className="font-medium cursor-pointer">{label}</Label>
+                      <p className="text-sm text-muted-foreground">{description}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </RadioGroup>
+            
+            {selectedRange && (
+              <Button 
+                onClick={handleRangeSubmit}
+                disabled={!playerName.trim()}
+                className="w-full bg-gradient-primary mt-4"
+                size="lg"
+              >
+                Next
+              </Button>
+            )}
+          </div>
         </div>
       </Card>
     </div>
