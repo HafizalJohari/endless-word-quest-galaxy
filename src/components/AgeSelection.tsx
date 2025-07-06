@@ -92,7 +92,7 @@ export const AgeSelection: React.FC<AgeSelectionProps> = ({ onPlayerReady }) => 
 
   if (step === 'preferences') {
     return (
-      <div className="min-h-screen bg-gradient-game flex items-center justify-center p-4">
+      <div className="h-screen bg-gradient-game flex items-center justify-center p-4">
         <Card className="p-8 max-w-lg w-full shadow-game animate-scale-in">
           <div className="text-center mb-6">
             <div className="bg-gradient-primary text-primary-foreground p-4 rounded-full shadow-game w-16 h-16 mx-auto mb-4 flex items-center justify-center">
@@ -162,7 +162,7 @@ export const AgeSelection: React.FC<AgeSelectionProps> = ({ onPlayerReady }) => 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-game flex items-center justify-center p-4">
+    <div className="h-screen bg-gradient-game flex items-center justify-center p-4">
       <Card className="p-8 max-w-md w-full shadow-game animate-scale-in">
         <div className="text-center mb-6">
           <div className="bg-gradient-primary text-primary-foreground p-4 rounded-full shadow-game w-16 h-16 mx-auto mb-4 flex items-center justify-center">

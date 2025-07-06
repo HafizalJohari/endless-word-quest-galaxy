@@ -190,7 +190,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
   // Show loading while generating game
   if (!gameData) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-game">
+      <div className="flex items-center justify-center h-screen bg-gradient-game">
         <Card className="p-8 shadow-game animate-scale-in">
           <div className="text-center">
             <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
@@ -202,19 +202,19 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
   }
 
   return (
-    <div className={`min-h-screen bg-gradient-game p-4 ${className}`}>
-      <div className="max-w-6xl mx-auto">
+    <div className={`h-screen bg-gradient-game flex flex-col ${className}`}>
+      <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col p-4">
         {/* Header */}
-        <div className="mb-6 animate-fade-in">
-          <Card className="card-elevated p-6">
+        <div className="mb-4 animate-fade-in">
+          <Card className="card-elevated p-4">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="bg-gradient-primary text-primary-foreground p-3 rounded-full shadow-game">
                   <Target className="w-6 h-6" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground">Word Search Infinity</h1>
-                  <p className="text-muted-foreground">Theme: {gameData.theme} | Player: {player.name}</p>
+                  <h1 className="text-xl font-bold text-foreground">Word Search Infinity</h1>
+                  <p className="text-muted-foreground text-sm">Theme: {gameData.theme} | Player: {player.name}</p>
                 </div>
               </div>
               
@@ -235,10 +235,10 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
           </Card>
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-6">
+        <div className="grid lg:grid-cols-4 gap-4 flex-1 overflow-hidden">
           {/* Game Grid */}
-          <div className="lg:col-span-3">
-            <Card className="card-game p-6 animate-scale-in">
+          <div className="lg:col-span-3 flex">
+            <Card className="card-game p-4 animate-scale-in flex-1 flex items-center justify-center">
               <WordSearchGrid
                 grid={gameData.grid}
                 wordsToFind={gameData.wordsToFind}
@@ -249,7 +249,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4">
+          <div className="flex flex-col gap-3 overflow-hidden">
             {/* Progression System */}
             <ProgressionSystem
               currentLevel={level}
@@ -268,20 +268,20 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
             />
             
             {/* Words List */}
-            <Card className="card-elevated p-4 animate-fade-in">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-foreground">Find These Words</h3>
-                <span className="text-sm text-muted-foreground">
+            <Card className="card-elevated p-3 animate-fade-in flex-1 min-h-0">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-medium text-foreground text-sm">Find These Words</h3>
+                <span className="text-xs text-muted-foreground">
                   {foundWords.size}/{gameData.wordsToFind.length}
                 </span>
               </div>
-              <div className="space-y-2 max-h-60 overflow-y-auto">
+              <div className="space-y-1 overflow-y-auto h-full">
                 {gameData.wordsToFind.map((word) => (
                   <div
                     key={word}
-                    className={`px-3 py-2 rounded-lg transition-all duration-300 ${
+                    className={`px-2 py-1 rounded text-sm transition-all duration-300 ${
                       foundWords.has(word)
-                        ? 'bg-game-found text-secondary-foreground line-through animate-pulse-success'
+                        ? 'bg-game-found text-secondary-foreground line-through'
                         : 'bg-game-grid text-foreground hover:bg-game-cell-hover'
                     }`}
                   >
@@ -292,11 +292,11 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
             </Card>
 
             {/* Progress */}
-            <Card className="progress-card p-4 animate-fade-in">
-              <h3 className="font-semibold text-foreground mb-3">Progress</h3>
-              <div className="space-y-3">
+            <Card className="progress-card p-3 animate-fade-in">
+              <h3 className="font-medium text-foreground mb-2 text-sm">Progress</h3>
+              <div className="space-y-2">
                 <div>
-                  <div className="flex justify-between text-sm mb-1">
+                  <div className="flex justify-between text-xs mb-1">
                     <span>Words Found</span>
                     <span>{foundWords.size}/{gameData.wordsToFind.length}</span>
                   </div>
@@ -311,10 +311,10 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
                 </div>
                 
                 {foundWords.size === gameData.wordsToFind.length && (
-                  <div className="text-center p-3 bg-gradient-success text-secondary-foreground rounded-lg animate-word-found">
-                    <Trophy className="w-6 h-6 mx-auto mb-2" />
-                    <p className="font-semibold">Level Complete!</p>
-                    <p className="text-sm opacity-90">Advancing to level {level + 1}...</p>
+                  <div className="text-center p-2 bg-gradient-success text-secondary-foreground rounded-lg animate-word-found">
+                    <Trophy className="w-4 h-4 mx-auto mb-1" />
+                    <p className="font-medium text-sm">Level Complete!</p>
+                    <p className="text-xs opacity-90">Advancing to level {level + 1}...</p>
                   </div>
                 )}
               </div>
@@ -332,19 +332,19 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
               <Button
                 onClick={() => setShowTutorial(true)}
                 variant="outline"
-                size="lg"
+                size="sm"
                 className="hover:bg-game-cell-hover transition-all duration-200"
               >
-                <HelpCircle className="w-4 h-4 mr-1" />
+                <HelpCircle className="w-3 h-3 mr-1" />
                 Help
               </Button>
               <Button
                 onClick={() => setShowLeaderboard(true)}
                 variant="outline"
-                size="lg"
+                size="sm"
                 className="hover:bg-game-cell-hover transition-all duration-200"
               >
-                <Award className="w-4 h-4 mr-1" />
+                <Award className="w-3 h-3 mr-1" />
                 Ranks
               </Button>
             </div>
@@ -359,13 +359,13 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
               }}
               disabled={isLoading}
               className="w-full bg-gradient-primary hover:shadow-game transition-all duration-300 hover:scale-105 active:scale-95"
-              size="lg"
+              size="sm"
             >
               {isLoading ? (
-                <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
+                <div className="animate-spin w-3 h-3 border-2 border-primary-foreground border-t-transparent rounded-full" />
               ) : (
                 <>
-                  <RefreshCw className="w-4 h-4 mr-2" />
+                  <RefreshCw className="w-3 h-3 mr-1" />
                   New Puzzle
                 </>
               )}
