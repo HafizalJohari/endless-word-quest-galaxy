@@ -267,13 +267,6 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
               }}
             />
             
-            {/* Combo Meter */}
-            {combo > 1 && (
-              <div className="animate-scale-in">
-                <ComboMeter combo={combo} onComboReset={() => setCombo(0)} />
-              </div>
-            )}
-            
             {/* Words List */}
             <Card className="card-elevated p-4 animate-fade-in">
               <div className="flex items-center justify-between mb-4">
@@ -326,6 +319,13 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({ className }) => 
                 )}
               </div>
             </Card>
+            
+            {/* Combo Meter */}
+            {combo > 1 && (
+              <div className="animate-scale-in">
+                <ComboMeter combo={combo} onComboReset={() => setCombo(0)} />
+              </div>
+            )}
 
             {/* Tutorial & Leaderboard Buttons */}
             <div className="grid grid-cols-2 gap-2">
